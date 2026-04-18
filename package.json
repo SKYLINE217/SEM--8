@@ -1,0 +1,17 @@
+{
+  "name": "molding_prototype",
+  "version": "1.0.0",
+  "description": "This project is a comprehensive digital twin prototype for a 4-pillar rubber compression molding machine. It demonstrates the integration of embedded systems, network communication, data structures, mathematical modeling, and real-time visualization to monitor and control the manufacturing process.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.103.3"
+  }
+}
