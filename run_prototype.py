@@ -75,7 +75,7 @@ def main():
         # Use sys.executable to ensure we use the same Python environment
         # Run from the script's directory so paths are consistent
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        subprocess.run([sys.executable, "-m", "streamlit", "run", "dashboard/app.py"], cwd=script_dir)
+        subprocess.run([sys.executable, "-m", "streamlit", "run", "dashboard/app.py", "--server.headless=true", "--server.address=127.0.0.1"], cwd=script_dir)
     except KeyboardInterrupt:
         print("\nStopping prototype...")
     except Exception as e:
