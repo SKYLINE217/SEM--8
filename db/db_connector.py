@@ -13,8 +13,9 @@ class DBConnector:
         self._init_db()
 
     def _init_db(self):
-        self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
+        self.conn = sqlite3.connect(self.db_path, check_same_thread=False, timeout=15)
         self.cursor = self.conn.cursor()
+        self.cursor.execute("PRAGMA journal_mode=WAL;")
         # Enable foreign keys
         self.cursor.execute("PRAGMA foreign_keys = ON;")
         

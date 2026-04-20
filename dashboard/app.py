@@ -135,7 +135,7 @@ st.markdown("""
 
 def get_connection():
     db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'molding.db')
-    return sqlite3.connect(db_path, check_same_thread=False)
+    return sqlite3.connect(db_path, check_same_thread=False, timeout=15)
 
 # Industrial color schemes for each machine (High contrast against black)
 SYSTEM_COLORS = {
