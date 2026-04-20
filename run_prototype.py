@@ -75,12 +75,11 @@ def main():
         # Use sys.executable to ensure we use the same Python environment
         # Run from the script's directory so paths are consistent
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        port = os.environ.get("PORT", "8501")
         subprocess.run([
             sys.executable, "-m", "streamlit", "run", "dashboard/app.py", 
             "--server.headless=true", 
             "--server.address=0.0.0.0",
-            f"--server.port={port}"
+            "--server.port=8501"
         ], cwd=script_dir)
     except KeyboardInterrupt:
         print("\nStopping prototype...")
