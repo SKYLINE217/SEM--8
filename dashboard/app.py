@@ -4,6 +4,7 @@ import sqlite3
 import os
 import time
 import altair as alt
+from db.db_connector import db_lock
 
 st.set_page_config(page_title="HMI SCADA | Molding Press Systems", layout="wide", initial_sidebar_state="expanded")
 
@@ -135,7 +136,7 @@ st.markdown("""
 
 def get_connection():
     db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'molding.db')
-    return sqlite3.connect(db_path, check_same_thread=False, timeout=15)
+    return sqlite3.connect(db_path, check_same_thread=False, timeout=30)
 
 # Industrial color schemes for each machine (High contrast against black)
 SYSTEM_COLORS = {
@@ -159,7 +160,8 @@ def get_machine_data_nocache(machine_id=None, limit=100):
                 WHERE sr.machine_id = ?
                 ORDER BY sr.timestamp DESC LIMIT ?
             '''
-            df = pd.read_sql(query, conn, params=(machine_id, limit))
+            with db_lock:
+                df = pd.read_sql(query, conn, params=(machine_id, limit))
         else:
             query = '''
                 SELECT sr.*, m.machine_name 
@@ -167,7 +169,8 @@ def get_machine_data_nocache(machine_id=None, limit=100):
                 JOIN machines m ON sr.machine_id = m.machine_id
                 ORDER BY sr.timestamp DESC LIMIT ?
             '''
-            df = pd.read_sql(query, conn, params=(limit,))
+            with db_lock:
+                df = pd.read_sql(query, conn, params=(limit,))
         
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
         # Sort ascending for time series charts
@@ -189,7 +192,8 @@ def get_latest_readings_nocache():
                 WHERE sr2.machine_id = sr.machine_id
             )
         '''
-        return pd.read_sql(query, conn)
+        with db_lock:
+            return pd.read_sql(query, conn)
     finally:
         conn.close()
 
@@ -204,7 +208,8 @@ def get_alerts_nocache(machine_id=None):
                 WHERE a.machine_id = ? AND a.resolved = 0
                 ORDER BY a.timestamp DESC LIMIT 10
             '''
-            return pd.read_sql(query, conn, params=(machine_id,))
+            with db_lock:
+                return pd.read_sql(query, conn, params=(machine_id,))
         else:
             query = '''
                 SELECT a.timestamp, m.machine_name, a.type, a.severity 
@@ -213,7 +218,8 @@ def get_alerts_nocache(machine_id=None):
                 WHERE a.resolved = 0
                 ORDER BY a.timestamp DESC LIMIT 10
             '''
-            return pd.read_sql(query, conn)
+            with db_lock:
+                return pd.read_sql(query, conn)
     finally:
         conn.close()
 
@@ -221,7 +227,8 @@ def get_alerts_nocache(machine_id=None):
 def get_machines_cached():
     conn = get_connection()
     try:
-        return pd.read_sql("SELECT * FROM machines ORDER BY machine_id", conn)
+        with db_lock:
+            return pd.read_sql("SELECT * FROM machines ORDER BY machine_id", conn)
     finally:
         conn.close()
 
